@@ -1,0 +1,39 @@
+
+```{r setup, include=FALSE}
+data = read.csv("/Users/xinyuanhe/Desktop/413/completedata.csv", h=T)
+```
+
+```{r}
+lm0 = lm(age ~ ., data = data)
+summary(lm0)
+```
+
+```{r}
+select_data = read.csv("/Users/xinyuanhe/Desktop/413/selecteddata.csv", h=T)
+```
+
+```{r}
+lm1 = lm(age ~ ., data = select_data)
+summary(lm1)
+```
+```{r}
+step(lm(age ~ ., data = select_data), test="F", trace=0, k = log(21))
+```
+
+```{r}
+lm2 = lm(age ~ X + asegLeftThalamus + rhGrayVollateralorbitofrontal + 
+    rhGrayVolrostralmiddlefrontal + asegRightCerebellumCortex + 
+    lhThickAvgsuperiorfrontal + asegLeftPutamen + rhGrayVolparsopercularis + 
+    rhThickAvgsuperiorfrontal + lhGrayVolposteriorcingulate + 
+    rhGrayVolsuperiortemporal + rhSurfAreainferiorparietal + 
+    rhThickAvgrostralmiddlefrontal + rhGrayVolprecuneus + asegLeftAccumbensarea + 
+    rhThickAvgmedialorbitofrontal + sex, data = select_data)
+summary(lm2)
+```
+
+
+
+
+
+
+
