@@ -1,0 +1,151 @@
+---
+title: "project"
+author: "wld"
+date: "2023-07-15"
+output: html_document
+---
+```{r}
+## prepare the complete data
+fulldata = read.csv('train_complete_data.csv')
+dim(fulldata)
+```
+```{r}
+library(car)
+
+lm_basic <- lm(age ~ wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula + sex + rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + lhThickAvglateraloccipital + lhMeanCurvprecentral, data = fulldata)
+
+leverage <- hatvalues(lm_basic)
+
+print(max(leverage))
+
+```
+
+```{r}
+library(car)
+
+lm_basic <- lm(age ~ wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula  + sex + rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + lhThickAvglateraloccipital + lhMeanCurvprecentral, data = fulldata)
+crPlot(lm_basic, variable = "wmparcwmlhmedialorbitofrontal")
+crPlot(lm_basic, variable = "wmparcwmlhinsula")
+```
+
+
+feature_selected_omp = 'wmparcwmlhmedialorbitofrontal', 'wmparcwmlhinsula',
+       'rhGrayVolsuperiorfrontal', 'asegLeftThalamus', 'asegLeftPutamen',
+       'asegBrainStem', 'asegRightCerebellumCortex', 'asegOpticChiasm',
+       'lhThickAvglateraloccipital', 'lhMeanCurvprecentral','sex','type'
+
+```{r}
+#test for all the interaction, using BIC
+step(lm(age ~ wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula  + sex + rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + lhThickAvglateraloccipital + lhMeanCurvprecentral, data=fulldata), scope = age ~ (wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula  + sex+ rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + lhThickAvglateraloccipital + lhMeanCurvprecentral)^2, direction = "forward", test = "F",k=log(1596), trace = 0)
+
+```
+       
+```{r}
+base_model_interact = lm(age^{0.75} ~ wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula + 
+    sex + rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + 
+    asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + 
+    lhThickAvglateraloccipital + lhMeanCurvprecentral + asegBrainStem:asegOpticChiasm + 
+    rhGrayVolsuperiorfrontal:asegLeftPutamen + wmparcwmlhinsula:rhGrayVolsuperiorfrontal, 
+    data = fulldata)
+summary(base_model_interact)
+
+```
+```{r}
+## model Diagnostic
+library(MASS)
+boxcox(lm(age ~ wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula + 
+    sex + rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + 
+    asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + 
+    lhThickAvglateraloccipital + lhMeanCurvprecentral + asegBrainStem:asegOpticChiasm + 
+    rhGrayVolsuperiorfrontal:asegLeftPutamen + wmparcwmlhinsula:rhGrayVolsuperiorfrontal, 
+    data = fulldata))
+```
+
+
+```{r}
+## model Diagnostic separate residual
+library(ggplot2)
+drawdata = fulldata
+# 将type和sex变量的值替换为对应的标签
+drawdata$type <- ifelse(drawdata$type == 0, "GE", "Siemens")
+drawdata$sex <- ifelse(drawdata$sex == 0, "female", "male")
+
+ggplot(drawdata, aes(x = base_model_interact$fitted.values, y = rstudent(base_model_interact))) +
+  geom_point() +
+  facet_grid(sex ~ type) +
+  geom_smooth(method = 'lm') +labs(x = "Age (years)", y = "Studentized Residuals") +
+  geom_hline(yintercept = 0, col = 2)
+
+```
+
+```{r}
+library(ggplot2)
+
+drawdata <- fulldata
+
+# Replace type and sex variable values with corresponding labels
+drawdata$type <- ifelse(drawdata$type == 0, "GE", "Siemens")
+drawdata$sex <- ifelse(drawdata$sex == 0, "female", "male")
+
+ggplot(drawdata, aes(x = base_model_interact$fitted.values, y = rstudent(base_model_interact))) +
+  geom_point() +
+  facet_grid(. ~ sex) +  # Exclude the "type" variable from the facet_grid
+  geom_smooth(method = 'lm') +
+  labs(x = "Age (years)", y = "Studentized Residuals") +
+  geom_hline(yintercept = 0, col = 2)
+
+```
+
+
+```{r}
+## model Diagnostic Total residual plot,component plus residual plot
+
+ggplot(drawdata, aes(x = base_model_interact$fitted.values, y = rstudent(base_model_interact))) +
+  geom_point() +
+  geom_smooth(method = 'lm') +labs(x = "Age (years)", y = "Studentized Residuals") 
+
+
+ 
+```
+```{r}
+#model diagnostic
+# Normal QQ plot
+qqnorm(rstudent(base_model_interact))
+qqline(rstudent(base_model_interact))
+
+```
+
+```{r}
+# Assuming your data is stored in a variable called 'data'
+# Replace 'data' with the name of your actual dataset
+
+# Specify the theoretical distribution to compare against
+# For example, if testing against a normal distribution:
+theoretical_dist <- rnorm(length(residuals(base_model_interact)), mean = 0, sd = 2.679)
+
+# Perform Kolmogorov-Smirnov test
+ks_test <- ks.test(residuals(base_model_interact), theoretical_dist)
+
+# Print the test statistic and p-value
+print(ks_test)
+
+# Extract the p-value for further analysis
+p_value <- ks_test$p.value
+
+# Check the test result using a significance level (e.g., 0.05)
+if (p_value < 0.05) {
+  print("The data significantly deviates from the theoretical distribution (reject the null hypothesis)")
+} else {
+  print("The data does not significantly deviate from the theoretical distribution (fail to reject the null hypothesis)")
+}
+```
+
+
+
+
+```{r}
+## influential point and outlier
+plot(cooks.distance(base_model_interact ))
+abline(h=qf(0.5, 14+1,1596 -14-1), col="red")
+```
+

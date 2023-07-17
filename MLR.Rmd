@@ -1,0 +1,58 @@
+---
+title: "MLR"
+author: "Haotian Fu"
+date: "2023-07-16"
+output: html_document
+---
+
+```{r}
+## prepare the complete data
+fulldata = read.csv('train_complete_data.csv')
+dim(fulldata)
+```
+
+```{r}
+library(car)
+
+lm_basic <- lm(age ~ wmparcwmlhmedialorbitofrontal + wmparcwmlhinsula  + sex + rhGrayVolsuperiorfrontal + asegLeftThalamus + asegLeftPutamen + asegBrainStem + asegRightCerebellumCortex + asegOpticChiasm + lhThickAvglateraloccipital + lhMeanCurvprecentral, data = fulldata)
+crPlot(lm_basic, variable = "wmparcwmlhmedialorbitofrontal")
+```
+
+
+feature_selected_mlr = 'wmparcwmlhmedialorbitofrontal', 'wmparcwmlhinsula',
+       'rhGrayVolsuperiorfrontal', 'asegLeftThalamus', 'asegLeftPutamen',
+       'asegBrainStem', 'asegRightCerebellumCortex', 'asegOpticChiasm',
+       'lhThickAvglateraloccipital', 'lhMeanCurvprecentral','sex','type'
+
+```{r}
+# Load the required libraries
+library(readr)
+library(car)
+
+# Read the dataset
+data <- read.csv("train_complete_data.csv")
+
+# Assign specific predictors for the MLR
+predictors <- c("wmparcRightUnsegmentedWhiteMatter", "lhGrayVolsuperiorfrontal", "wmparcLeftUnsegmentedWhiteMatter",
+                "wmparcwmrhsuperiorfrontal", "wmparcwmrhinsula", "wmparcwmlhsuperiorfrontal", 
+                "asegLeftCerebellumCortex", "asegRightCerebellumCortex", "rhGrayVolrostralmiddlefrontal",
+                "wmparcwmrhrostralmiddlefrontal", "rhGrayVolsuperiorfrontal")
+
+# Construct the formula for MLR
+dependent_variable <- "age"
+formula <- paste(dependent_variable, "~", paste(predictors, collapse = " + "))
+
+# Perform Multiple Linear Regression
+model <- lm(formula, data = data)
+
+# Summary of the regression model
+summary(model)
+
+# Predict using the model (replace 'new_data' with the data you want to predict on)
+# new_data <- data.frame(variable1 = c(1, 2, 3), variable2 = c(4, 5, 6), variable3 = c(7, 8, 9))
+# predictions <- predict(model, newdata = new_data)
+
+# Display the predictions
+# print(predictions)
+
+```
