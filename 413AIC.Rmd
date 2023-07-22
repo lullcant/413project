@@ -1,6 +1,7 @@
 
 ```{r setup, include=FALSE}
-data = read.csv("/Users/xinyuanhe/Desktop/413/completedata.csv", h=T)
+# data = read.csv("/Users/xinyuanhe/Desktop/413/completedata.csv", h=T)
+data = read.csv("completedata.csv", h=T)
 ```
 
 ```{r}
@@ -9,7 +10,8 @@ summary(lm0)
 ```
 
 ```{r}
-select_data = read.csv("/Users/xinyuanhe/Desktop/413/selecteddata.csv", h=T)
+# select_data = read.csv("/Users/xinyuanhe/Desktop/413/selecteddata.csv", h=T)
+select_data = read.csv("selecteddata.csv", h=T)
 ```
 
 ```{r}

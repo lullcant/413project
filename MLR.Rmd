@@ -36,7 +36,7 @@ data <- read.csv("train_complete_data.csv")
 predictors <- c("wmparcRightUnsegmentedWhiteMatter", "lhGrayVolsuperiorfrontal", "wmparcLeftUnsegmentedWhiteMatter",
                 "wmparcwmrhsuperiorfrontal", "wmparcwmrhinsula", "wmparcwmlhsuperiorfrontal", 
                 "asegLeftCerebellumCortex", "asegRightCerebellumCortex", "rhGrayVolrostralmiddlefrontal",
-                "wmparcwmrhrostralmiddlefrontal", "rhGrayVolsuperiorfrontal")
+                "wmparcwmrhrostralmiddlefrontal", "rhGrayVolsuperiorfrontal", "sex")
 
 # Construct the formula for MLR
 dependent_variable <- "age"

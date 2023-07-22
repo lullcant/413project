@@ -149,3 +149,7 @@ plot(cooks.distance(base_model_interact ))
 abline(h=qf(0.5, 14+1,1596 -14-1), col="red")
 ```
 
+```{r}
+print(max(cooks.distance(base_model_interact)))
+```
+
